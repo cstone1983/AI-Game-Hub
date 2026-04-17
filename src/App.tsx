@@ -38,13 +38,19 @@ export default function App() {
         body: JSON.stringify({ target })
       });
       
-      const data = await res.json();
+      const text = await res.text();
+      let data: any = {};
+      try {
+        data = text ? JSON.parse(text) : {};
+      } catch (e) {
+        data = { error: 'Unknown response type. Received HTML instead of JSON.', details: text.substring(0, 200) };
+      }
       
       if (res.ok) {
         setUpdateLog(prev => prev + `[SUCCESS] Update pulled successfully.\n\n${data.output}`);
         setUpdateStatus('success');
       } else {
-        setUpdateLog(prev => prev + `[ERROR] Update failed.\n\n${data.details || data.traceback || data.error}`);
+        setUpdateLog(prev => prev + `[ERROR] Update failed (${res.status}).\n\n${data.details || data.traceback || data.error || 'No details provided.'}`);
         setUpdateStatus('error');
       }
     } catch (err) {
