@@ -1,0 +1,56 @@
+<!doctype html>
+<html lang="en">
+<head>
+  <meta charset="UTF-8">
+  <meta name="viewport" content="width=device-width, initial-scale=1.0">
+  <title>Infinity Admin Control</title>
+  <link rel="stylesheet" href="/style.css">
+</head>
+<body>
+  
+  <div class="container" id="admin-view">
+    <div class="glass-panel flex-between" style="margin-bottom: 2rem;">
+      <div>
+        <h1>COMMAND CENTER</h1>
+        <p>Global Hub Orchestration</p>
+      </div>
+      <div>
+        <a href="/" class="btn">Return to Hub</a>
+      </div>
+    </div>
+
+    <!-- Analytics Overview -->
+    <div class="grid grid-cols-2" style="margin-bottom: 2rem;">
+      <div class="glass-panel text-center">
+        <h3 style="color: var(--text-muted); font-size: 0.8rem;">Hub Status</h3>
+        <p id="hub-pulse" style="font-size: 1.5rem; margin-top: 0.5rem; font-weight: bold;"><span class="status-indicator status-online"></span> Polling...</p>
+      </div>
+      <div class="glass-panel text-center">
+        <h3 style="color: var(--text-muted); font-size: 0.8rem;">Active Players</h3>
+        <p id="hub-users" style="font-size: 1.5rem; margin-top: 0.5rem; font-family: monospace;">0</p>
+      </div>
+    </div>
+
+    <!-- Game Registry UI -->
+    <div class="glass-panel" style="margin-bottom: 2rem;">
+      <h3>Module Registry</h3>
+      <div id="registry-list" style="margin-top: 1rem;">
+        <!-- Modules Injected here -->
+      </div>
+    </div>
+
+    <!-- Webhook CI/CD Terminal -->
+    <div class="glass-panel">
+      <div class="flex-between" style="margin-bottom: 1rem;">
+        <h3>CI/CD Orchestrator Terminal</h3>
+        <button id="trigger-update-btn" class="btn btn-primary">PULL FROM GITHUB</button>
+      </div>
+      <pre id="console-output" class="console-output">[INFO] Admin session initiated.
+[INFO] Ready for orchestration commands...
+</pre>
+    </div>
+  </div>
+
+  <script type="module" src="/admin.js"></script>
+</body>
+</html>

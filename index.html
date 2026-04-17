@@ -1,13 +1,46 @@
 <!doctype html>
 <html lang="en">
-  <head>
-    <meta charset="UTF-8" />
-    <meta name="viewport" content="width=device-width, initial-scale=1.0" />
-    <title>My Google AI Studio App</title>
-  </head>
-  <body>
-    <div id="root"></div>
-    <script type="module" src="/src/main.tsx"></script>
-  </body>
-</html>
+<head>
+  <meta charset="UTF-8">
+  <meta name="viewport" content="width=device-width, initial-scale=1.0">
+  <title>Infinity Game Hub</title>
+  <link rel="stylesheet" href="/style.css">
+</head>
+<body>
+  
+  <div class="container" id="auth-container">
+    <div class="glass-panel text-center" style="max-width: 400px; margin: 4rem auto;">
+      <h1>INFINITY</h1>
+      <p style="margin-bottom: 2rem;">Global Authentication Portal</p>
+      
+      <form id="login-form">
+        <input type="text" id="username" placeholder="Username" required autocomplete="off">
+        <input type="password" id="password" placeholder="Password" required>
+        <button type="submit" class="btn btn-primary" style="width: 100%;">Initialize Link</button>
+      </form>
+      
+      <div id="auth-error" class="hidden mt-4" style="color: var(--danger); font-size: 0.85rem;"></div>
+    </div>
+  </div>
 
+  <div class="container hidden" id="dashboard-container">
+    <div class="glass-panel flex-between" style="margin-bottom: 2rem;">
+      <div>
+        <h2>HUB TERMINUS</h2>
+        <p id="user-stats" style="font-size: 0.85rem; margin-top: 0.25rem;">Level: 1 | Miles: 0</p>
+      </div>
+      <div style="display: flex; gap: 1rem;">
+        <a href="/admin.html" id="admin-btn" class="btn hidden">Admin Panel</a>
+        <button id="logout-btn" class="btn">Disconnect</button>
+      </div>
+    </div>
+
+    <h3 style="margin-bottom: 1rem; color: var(--glow-cyan);">Available Modules</h3>
+    <div class="grid grid-cols-2" id="game-registry">
+      <!-- Injected via JS -->
+    </div>
+  </div>
+
+  <script type="module" src="/main.js"></script>
+</body>
+</html>
