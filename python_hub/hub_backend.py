@@ -1,6 +1,7 @@
 import os
 import sqlite3
 import traceback
+import subprocess
 from flask import Flask, request, jsonify
 from datetime import datetime
 
@@ -51,6 +52,28 @@ def init_db():
         print(traceback.format_exc())
 
 # --- UNIVERSAL API CONTRACT ENDPOINTS ---
+
+@app.route('/api/hub/update', methods=['POST'])
+def trigger_update():
+    """Webhook Update Trigger for CI/CD"""
+    try:
+        data = request.json or {}
+        target = data.get('target', 'all')
+        
+        # Execute the automated bash script
+        # This points directly to the GitHub repo requested (cstone1983/AI-Game-Hub)
+        result = subprocess.run(
+            ['bash', 'scripts/update.sh'],
+            capture_output=True,
+            text=True,
+            check=True
+        )
+        return jsonify({'status': 'success', 'output': result.stdout})
+    except subprocess.CalledProcessError as e:
+        return jsonify({'error': 'Git Pull/Update failed', 'traceback': e.stderr}), 500
+    except Exception:
+        return jsonify({'error': 'Internal Server Error', 'traceback': traceback.format_exc()}), 500
+
 
 @app.route('/api/game/load_state', methods=['GET'])
 def load_state():

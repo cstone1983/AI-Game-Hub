@@ -2,6 +2,7 @@ import express from 'express';
 import { createServer as createViteServer } from 'vite';
 import path from 'path';
 import cors from 'cors';
+import { exec } from 'child_process';
 import db from './src/lib/db.ts';
 
 async function startServer() {
@@ -14,7 +15,27 @@ async function startServer() {
   // --- UNIVERSAL API CONTRACT ---
 
   /**
+   * CI/CD Update Webhook
+   * POST /api/hub/update
+   */
+  app.post('/api/hub/update', (req, res) => {
+    try {
+      // Execute the update script orchestrator which points to https://github.com/cstone1983/AI-Game-Hub
+      exec('bash scripts/update.sh', (error, stdout, stderr) => {
+        if (error) {
+          return res.status(500).json({ error: 'Update script failed', details: stderr || error.message });
+        }
+        res.json({ status: 'success', output: stdout });
+      });
+    } catch (err) {
+      console.error(err);
+      res.status(500).json({ error: 'Failed to trigger update orchestrator', details: String(err) });
+    }
+  });
+
+  /**
    * Load Game State
+
    * GET /api/game/load_state?game_id=...&user_id=...
    */
   app.get('/api/game/load_state', (req, res) => {

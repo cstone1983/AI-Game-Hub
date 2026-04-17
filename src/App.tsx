@@ -17,6 +17,8 @@ export default function App() {
   const [activeTab, setActiveTab] = useState('hub');
   const [stats, setStats] = useState({ activeUsers: 0, gamesTracked: 0 });
   const [backendStatus, setBackendStatus] = useState<'online' | 'offline'>('online');
+  const [updateStatus, setUpdateStatus] = useState<string | null>(null);
+  const [updateLog, setUpdateLog] = useState<string>('');
 
   useEffect(() => {
     fetch('/api/hub/stats')
@@ -24,6 +26,32 @@ export default function App() {
       .then(data => setStats(data))
       .catch(() => setBackendStatus('offline'));
   }, []);
+
+  const triggerUpdate = async (target: string) => {
+    setUpdateStatus('updating');
+    setUpdateLog(`[INFO] Triggering webhook update for ${target} from cstone1983/AI-Game-Hub...\n`);
+    
+    try {
+      const res = await fetch('/api/hub/update', {
+        method: 'POST',
+        headers: { 'Content-Type': 'application/json' },
+        body: JSON.stringify({ target })
+      });
+      
+      const data = await res.json();
+      
+      if (res.ok) {
+        setUpdateLog(prev => prev + `[SUCCESS] Update pulled successfully.\n\n${data.output}`);
+        setUpdateStatus('success');
+      } else {
+        setUpdateLog(prev => prev + `[ERROR] Update failed.\n\n${data.details || data.traceback || data.error}`);
+        setUpdateStatus('error');
+      }
+    } catch (err) {
+      setUpdateLog(prev => prev + `[CRITICAL] Network request failed.\n${String(err)}`);
+      setUpdateStatus('error');
+    }
+  };
 
   return (
     <div className="flex h-screen overflow-hidden text-sm uppercase tracking-wider">
@@ -110,13 +138,26 @@ export default function App() {
 
                  {/* Global Log */}
                  <div className="col-span-12 mt-8">
-                   <h3 className="text-xs text-[#666] mb-4">PLATFORM TERMINAL</h3>
-                   <div className="bg-black p-4 mono text-[11px] h-48 overflow-y-auto text-[#00FF00] border border-[#2A2A2A]">
+                   <div className="flex justify-between items-center mb-4">
+                     <h3 className="text-xs text-[#666]">PLATFORM TERMINAL & CI/CD</h3>
+                     <button 
+                       onClick={() => triggerUpdate('all')}
+                       disabled={updateStatus === 'updating'}
+                       className={`text-xs px-3 py-1 border transition-colors ${
+                         updateStatus === 'updating' ? 'border-[#444] text-[#444]' : 'border-[#00FF00] text-[#00FF00] hover:bg-[#00FF00] hover:text-black'
+                       }`}
+                     >
+                       {updateStatus === 'updating' ? 'PULLING...' : 'PULL FROM GITHUB'}
+                     </button>
+                   </div>
+                   <div className="bg-black p-4 mono text-[11px] h-48 overflow-y-auto text-[#00FF00] border border-[#2A2A2A] whitespace-pre-wrap">
+                     <div>[INFO] TARGET REPO: github.com/cstone1983/AI-Game-Hub</div>
                      <div>[INFO] HUB CORE LOADED...</div>
                      <div>[INFO] ESTABLISHING DATABASE CONNECTION...</div>
                      <div>[INFO] SQLITE ADAPTER: ONLINE</div>
                      <div>[WARN] GAME_MODULE_1: ASSETS MISSING (EXPECTED IN PHASE 2)</div>
                      <div>[INFO] API_CONTRACT_v1: LISTENING ON PORT 3000</div>
+                     {updateLog && <div className="mt-4 pt-4 border-t border-[#2A2A2A]">{updateLog}</div>}
                      <div className="animate-pulse">_</div>
                    </div>
                  </div>
